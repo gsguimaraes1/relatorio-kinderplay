@@ -279,13 +279,14 @@ export default function App() {
           </section>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
           {[
             { label: "Receita (Bruta)", value: formatCurrency(stats?.totalRevenue || 0), icon: DollarSign, color: "text-[#F27D26]", trend: "+12.5%" },
             { label: "Frete (Repasse)", value: formatCurrency(stats?.totalFreight || 0), icon: Truck, color: "text-amber-500", trend: "+0.0%" },
+            { label: "Custo (Compra)", value: formatCurrency(stats?.totalCost || 0), icon: Package, color: "text-purple-400", trend: "-2.3%" },
+            { label: "Impostos Totais", value: formatCurrency(stats?.totalTaxes || 0), icon: Receipt, color: "text-rose-400", trend: "+4.3%" },
             { label: "Lucro Líquido", value: formatCurrency(stats?.totalProfit || 0), icon: TrendingUp, color: "text-emerald-400", trend: "+8.2%" },
             { label: "Margem Média", value: `${stats?.avgMargin.toFixed(2)}%`, icon: Percent, color: "text-blue-400", trend: "-1.1%" },
-            { label: "Impostos Totais", value: formatCurrency(stats?.totalTaxes || 0), icon: Receipt, color: "text-rose-400", trend: "+4.3%" },
           ].map((stat, i) => (
             <div
               key={stat.label}
