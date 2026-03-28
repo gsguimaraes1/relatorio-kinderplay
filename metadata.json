@@ -1,0 +1,5 @@
+{
+  "name": "Relatório de Vendas e Lucratividade",
+  "description": "Dashboard analítico para acompanhamento de pedidos, lucros e impostos baseado em dados de vendas.",
+  "requestFramePermissions": []
+}
