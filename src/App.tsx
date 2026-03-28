@@ -51,28 +51,17 @@ export default function App() {
   const [data, setData] = useState<OrderData[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [highlightOrderId, setHighlightOrderId] = useState<string>("14899");
 
   useGSAP(() => {
     if (!loading && containerRef.current) {
       const tl = gsap.timeline();
       
       tl.fromTo(".gsap-header", { y: -50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" })
-        .fromTo(".gsap-highlight", { scale: 0.95, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.7)" }, "-=0.3")
         .fromTo(".gsap-stat-card", { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, stagger: 0.1, ease: "power3.out" }, "-=0.2")
         .fromTo(".gsap-chart", { scale: 0.95, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.5, stagger: 0.1, ease: "power2.out" }, "-=0.2")
         .fromTo(".gsap-table-row", { x: -20, opacity: 0 }, { x: 0, opacity: 1, duration: 0.4, stagger: 0.05, ease: "power2.out" }, "-=0.1");
     }
   }, { dependencies: [loading], scope: containerRef });
-
-  useGSAP(() => {
-    if (!loading && highlightOrderId) {
-      gsap.fromTo(".gsap-highlight", 
-        { scale: 0.98, opacity: 0.5 }, 
-        { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2)" }
-      );
-    }
-  }, { dependencies: [highlightOrderId], scope: containerRef });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -170,8 +159,6 @@ export default function App() {
     )
   );
 
-  const highlightedOrder = data.find((o) => o.Pedido === highlightOrderId);
-
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
@@ -216,68 +203,6 @@ export default function App() {
       </header>
 
       <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
-        {/* Highlight Section */}
-        {highlightedOrder && (
-          <section
-            className="gsap-highlight relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1A1A1A] to-[#111111] border border-white/10 p-8"
-          >
-            <div className="absolute top-0 right-0 p-8 opacity-10">
-              <Package className="w-32 h-32" />
-            </div>
-            <div className="relative z-10 flex flex-col md:flex-row gap-8 items-start md:items-center justify-between">
-              <div className="space-y-4">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F27D26]/10 border border-[#F27D26]/20 text-[#F27D26] text-[10px] font-bold uppercase tracking-widest">
-                  Pedido em Destaque
-                </div>
-                <h2 className="text-3xl font-bold tracking-tight">
-                  {highlightedOrder["Ordem Compra / Cliente"]}
-                </h2>
-                <div className="flex flex-wrap gap-6 text-sm text-[#8E9299]">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4" />
-                    <span>{highlightedOrder["Emissão Pedido"]}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CreditCard className="w-4 h-4" />
-                    <span>{highlightedOrder["Local Pgto"]}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Receipt className="w-4 h-4" />
-                    <span>NFE: {highlightedOrder["NFE SAIDA"]}</span>
-                  </div>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4 w-full md:w-auto">
-                <div className="bg-black/40 backdrop-blur-md rounded-2xl p-4 border border-white/5">
-                  <p className="text-[10px] text-[#8E9299] uppercase tracking-widest mb-1">Venda Total</p>
-                  <p className="text-xl font-bold text-[#F27D26]">{highlightedOrder["Valor Total Venda"]}</p>
-                </div>
-                <div className="bg-black/40 backdrop-blur-md rounded-2xl p-4 border border-white/5">
-                  <p className="text-[10px] text-[#8E9299] uppercase tracking-widest mb-1">Margem</p>
-                  <p className="text-xl font-bold text-emerald-400">{highlightedOrder.Margem}</p>
-                </div>
-              </div>
-            </div>
-            <div className="mt-8 pt-8 border-t border-white/5 grid grid-cols-2 md:grid-cols-4 gap-8">
-              <div>
-                <p className="text-[10px] text-[#8E9299] uppercase tracking-widest mb-2">Produto</p>
-                <p className="text-sm font-medium line-clamp-2">{highlightedOrder.Produto}</p>
-              </div>
-              <div>
-                <p className="text-[10px] text-[#8E9299] uppercase tracking-widest mb-2">Frete</p>
-                <p className="text-sm font-medium">{highlightedOrder.Frete || "R$ 0,00"}</p>
-              </div>
-              <div>
-                <p className="text-[10px] text-[#8E9299] uppercase tracking-widest mb-2">Lucro S/ Imp</p>
-                <p className="text-sm font-medium text-emerald-400">{highlightedOrder["Lucro S Imp"]}</p>
-              </div>
-              <div>
-                <p className="text-[10px] text-[#8E9299] uppercase tracking-widest mb-2">ICMS Próprio</p>
-                <p className="text-sm font-medium">{highlightedOrder["ICMS Proprio"]}</p>
-              </div>
-            </div>
-          </section>
-        )}
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
           {[
@@ -426,41 +351,54 @@ export default function App() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-white/2">
-                  <th className="px-8 py-4 text-[10px] text-[#8E9299] uppercase tracking-widest font-bold">Pedido</th>
-                  <th className="px-8 py-4 text-[10px] text-[#8E9299] uppercase tracking-widest font-bold">Cliente</th>
-                  <th className="px-8 py-4 text-[10px] text-[#8E9299] uppercase tracking-widest font-bold">Produto</th>
-                  <th className="px-8 py-4 text-[10px] text-[#8E9299] uppercase tracking-widest font-bold text-right">Venda</th>
-                  <th className="px-8 py-4 text-[10px] text-[#8E9299] uppercase tracking-widest font-bold text-right">Lucro</th>
-                  <th className="px-8 py-4 text-[10px] text-[#8E9299] uppercase tracking-widest font-bold text-right">Margem</th>
+                  <th className="px-6 py-4 text-[10px] text-[#8E9299] uppercase tracking-widest font-bold">Pedido</th>
+                  <th className="px-6 py-4 text-[10px] text-[#8E9299] uppercase tracking-widest font-bold">Cliente</th>
+                  <th className="px-6 py-4 text-[10px] text-[#8E9299] uppercase tracking-widest font-bold">Produto</th>
+                  <th className="px-6 py-4 text-[10px] text-[#8E9299] uppercase tracking-widest font-bold text-right">Custo</th>
+                  <th className="px-6 py-4 text-[10px] text-[#8E9299] uppercase tracking-widest font-bold text-right">Frete</th>
+                  <th className="px-6 py-4 text-[10px] text-[#8E9299] uppercase tracking-widest font-bold text-right">ICMS</th>
+                  <th className="px-6 py-4 text-[10px] text-[#8E9299] uppercase tracking-widest font-bold text-right">Venda</th>
+                  <th className="px-6 py-4 text-[10px] text-[#8E9299] uppercase tracking-widest font-bold text-right">Lucro</th>
+                  <th className="px-6 py-4 text-[10px] text-[#8E9299] uppercase tracking-widest font-bold text-right">Margem</th>
                 </tr>
               </thead>
                 <tbody>
                   {filteredOrders.map((order, i) => (
                     <tr
                       key={order.Pedido}
-                      onClick={() => setHighlightOrderId(order.Pedido)}
-                      className={cn(
-                        "gsap-table-row group hover:bg-white/5 transition-colors cursor-pointer",
-                        order.Pedido === highlightOrderId && "bg-[#F27D26]/10"
-                      )}
+                      className="gsap-table-row group hover:bg-white/5 transition-colors"
                     >
-                      <td className="px-8 py-5">
+                      <td className="px-6 py-5">
                         <span className="font-mono text-sm text-[#8E9299] group-hover:text-white transition-colors">#{order.Pedido}</span>
+                        <div className="text-[10px] mt-1 text-[#8E9299]/70">{order["Emissão Pedido"]}</div>
                       </td>
-                      <td className="px-8 py-5">
+                      <td className="px-6 py-5">
                         <p className="text-sm font-medium truncate max-w-[200px]">{order["Ordem Compra / Cliente"]}</p>
-                        <p className="text-[10px] text-[#8E9299]">{order["Emissão Pedido"]}</p>
+                        <div className="flex gap-2 text-[10px] text-[#8E9299] mt-1">
+                          <span>NFE: {order["NFE SAIDA"] || "-"}</span>
+                          <span>&bull;</span>
+                          <span>{order["Local Pgto"]}</span>
+                        </div>
                       </td>
-                      <td className="px-8 py-5">
-                        <p className="text-sm text-[#8E9299] truncate max-w-[250px] group-hover:text-white transition-colors">{order.Produto}</p>
+                      <td className="px-6 py-5">
+                        <p className="text-sm text-[#8E9299] truncate max-w-[200px] group-hover:text-white transition-colors" title={order.Produto}>{order.Produto}</p>
                       </td>
-                      <td className="px-8 py-5 text-right">
-                        <span className="text-sm font-bold">{order["Valor Total Venda"]}</span>
+                      <td className="px-6 py-5 text-right">
+                        <span className="text-sm font-bold text-purple-400">{order["Valor Total Compra"]}</span>
                       </td>
-                      <td className="px-8 py-5 text-right">
+                      <td className="px-6 py-5 text-right">
+                        <span className="text-sm font-bold text-amber-500">{order.Frete || "R$ 0,00"}</span>
+                      </td>
+                      <td className="px-6 py-5 text-right">
+                        <span className="text-sm font-bold text-rose-400">{order["ICMS Proprio"]}</span>
+                      </td>
+                      <td className="px-6 py-5 text-right">
+                        <span className="text-sm font-bold text-[#F27D26]">{order["Valor Total Venda"]}</span>
+                      </td>
+                      <td className="px-6 py-5 text-right">
                         <span className="text-sm font-bold text-emerald-400">{order["Lucro S Imp"]}</span>
                       </td>
-                      <td className="px-8 py-5 text-right">
+                      <td className="px-6 py-5 text-right">
                         <div className="inline-flex items-center gap-2 px-2 py-1 rounded-lg bg-white/5 text-[10px] font-bold">
                           {order.Margem}
                         </div>
